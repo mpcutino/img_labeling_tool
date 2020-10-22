@@ -22,8 +22,11 @@
     <height>756</height>
    </size>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
   <property name="windowTitle">
-   <string>Events Labeling Tool</string>
+   <string>Images Labeling Tool</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -253,8 +256,6 @@
      </layout>
     </item>
    </layout>
-   <zorder>img_lbl</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'qt_generated/main.ui'
+# Form implementation generated from reading ui file 'main.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -28,6 +28,7 @@ class Ui_MainWindow(object):
         MainWindow.resize(777, 543)
         MainWindow.setMinimumSize(QtCore.QSize(500, 425))
         MainWindow.setMaximumSize(QtCore.QSize(1000, 756))
+        MainWindow.setFocusPolicy(QtCore.Qt.StrongFocus)
         MainWindow.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setEnabled(True)
@@ -131,7 +132,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.btn_SaveIt)
         self.verticalLayout_2.addLayout(self.verticalLayout_3)
         self.verticalLayout_4.addLayout(self.verticalLayout_2)
-        self.img_lbl.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 777, 25))
@@ -187,7 +187,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "Events Labeling Tool", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Images Labeling Tool", None))
         self.lbl_ImgName.setText(_translate("MainWindow", "Image Name", None))
         self.btn_Resize.setText(_translate("MainWindow", "Resize", None))
         self.lineEdit_x.setPlaceholderText(_translate("MainWindow", "x", None))

@@ -66,6 +66,8 @@ class Modified_MainWindow(Ui_MainWindow):
             self.update_image(foward=True)
 
     def mouse_released(self, event):
+        if 0 > self.count or self.count >= len(self.images_names):
+            return
         end = time.time()
         x = event.pos().x()
         y = event.pos().y()
@@ -122,8 +124,14 @@ class Modified_MainWindow(Ui_MainWindow):
             else:
                 # REQUIRED_COLS = ["timestamp", "boxImg_name", "class_name", "proba", "x", "y", "w", "h"]
                 b_name = str(self.lbl_ImgName.text())
-                self.images_df.loc[len(self.images_df.index)] = [remove_extension(b_name),
-                                                                 b_name, cl_name, 1, x, y, w, h, "manual"]
+                empty_image = (self.images_df["boxImg_name"] == b_name) & (self.images_df["class_name"] == "-1")
+                tmp_df = self.images_df.loc[empty_image]
+                if tmp_df.empty:
+                    self.images_df.loc[len(self.images_df.index)] = [remove_extension(b_name),
+                                                                     b_name, cl_name, 1, x, y, w, h, "manual"]
+                else:
+                    self.images_df.loc[empty_image] = [remove_extension(b_name), b_name,
+                                                       cl_name, 1, x, y, w, h, "manual"]
                 print(len(self.images_df.index))
                 if len(self.attention_box):
                     self.remove_att_box()
@@ -244,7 +252,7 @@ class Modified_MainWindow(Ui_MainWindow):
                     bbox_color = self.box_def_color
                 else:
                     x, y, w, h, cl_name, prob, bbox_color = box
-                draw_bBox(img, (x, y), (x+w, y+h), cl_name, prob, bbox_color=bbox_color)
+                draw_bBox(img, (x, y), (x+w, y+h), cl_name, prob*100, bbox_color=bbox_color)
             cv2.imwrite("tmp.png", img)
             self.img_lbl.setPixmap(QtGui.QPixmap("tmp.png"))
             remove("tmp.png")
