@@ -124,7 +124,8 @@ class Modified_MainWindow(Ui_MainWindow):
             else:
                 # REQUIRED_COLS = ["timestamp", "boxImg_name", "class_name", "proba", "x", "y", "w", "h"]
                 b_name = str(self.lbl_ImgName.text())
-                empty_image = (self.images_df["boxImg_name"] == b_name) & (self.images_df["class_name"] == "-1")
+                empty_image = (self.images_df["boxImg_name"] == b_name) & \
+                              ((self.images_df["class_name"] == "-1") | (self.images_df["class_name"] == -1))
                 tmp_df = self.images_df.loc[empty_image]
                 if tmp_df.empty:
                     self.images_df.loc[len(self.images_df.index)] = [remove_extension(b_name),
@@ -145,15 +146,20 @@ class Modified_MainWindow(Ui_MainWindow):
         if 0 <= self.count < len(self.images_names) and len(self.attention_box):
             x, y, w, h, cl_name, prob = self.attention_box
             current_img_name = self.images_names[self.count]
-            df = self.images_df.query("boxImg_name == @current_img_name & "
-                                                  "class_name == @cl_name & proba == @prob & "
-                                                  "x == @x & y == @y & w == @w & h == @h")
-            self.images_df = self.images_df.query("boxImg_name != @current_img_name | "
-                                                  "class_name != @cl_name | proba != @prob | "
-                                                  "x != @x | y != @y | w != @w | h != @h").reset_index(drop=True)
+            image_boxes = self.images_df["boxImg_name"] == current_img_name
+            if image_boxes.sum() > 1:
+                # there is more than one box, so maintain all the others but this one
+                self.images_df = self.images_df.query("boxImg_name != @current_img_name | "
+                                                      "class_name != @cl_name | proba != @prob | "
+                                                      "x != @x | y != @y | w != @w | h != @h").reset_index(drop=True)
+            elif image_boxes.sum() == 1:
+                # if there is only one box in the image, then update the df as if there are not elements for his image
+                self.images_df[image_boxes] = [remove_extension(current_img_name), current_img_name,
+                                                   -1, -1, -1, -1, -1, -1, "manual"]
+
             img_data = self.images_df.loc[self.images_df["boxImg_name"] == current_img_name]
             self.paint_img(get_bboxes(img_data))
-            self.modified_boxes.append(df)
+            # self.modified_boxes.append(df)
             self.attention_box = ()
 
     def close_event(self, event):
@@ -210,11 +216,12 @@ class Modified_MainWindow(Ui_MainWindow):
         self.start_click = time.time()
 
     def undo(self):
-        if len(self.modified_boxes):
-            df = self.modified_boxes[-1]
-            self.images_df = self.images_df.append(df).reset_index(drop=True)
-            self.paint_img(get_bboxes(df))
-            self.modified_boxes = self.modified_boxes[:-1]
+        pass
+        # if len(self.modified_boxes):
+        #     df = self.modified_boxes[-1]
+        #     self.images_df = self.images_df.append(df).reset_index(drop=True)
+        #     self.paint_img(get_bboxes(df))
+        #     self.modified_boxes = self.modified_boxes[:-1]
 
     def next_image(self):
         self.update_image(foward=True)
