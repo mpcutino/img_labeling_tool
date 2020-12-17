@@ -158,9 +158,10 @@ class Modified_MainWindow(Ui_MainWindow):
                                                    -1, -1, -1, -1, -1, -1, "manual"]
 
             img_data = self.images_df.loc[self.images_df["boxImg_name"] == current_img_name]
-            self.paint_img(get_bboxes(img_data))
-            # self.modified_boxes.append(df)
             self.attention_box = ()
+	    self.paint_img(get_bboxes(img_data))
+            # self.modified_boxes.append(df)
+            
 
     def close_event(self, event):
         reply = QtGui.QMessageBox.question(self.mainWindow, 'Message',
@@ -253,13 +254,17 @@ class Modified_MainWindow(Ui_MainWindow):
             current_img_name = self.images_names[self.count]
             img_path = os_path.join(self.img_folder, current_img_name)
             img = cv2.imread(img_path)
-            for box in bboxes:
-                if len(box) == 6:
-                    x, y, w, h, cl_name, prob = box
-                    bbox_color = self.box_def_color
-                else:
-                    x, y, w, h, cl_name, prob, bbox_color = box
-                draw_bBox(img, (x, y), (x+w, y+h), cl_name, prob*100, bbox_color=bbox_color)
+	    if len(self.attention_box):
+            	x, y, w, h, cl_name, prob = self.attention_box
+		draw_bBox(img, (x, y), (x+w, y+h), cl_name, prob*100, bbox_color=self.box_attention_color)
+	    else:
+		for box in bboxes:
+		    if len(box) == 6:
+			x, y, w, h, cl_name, prob = box
+			bbox_color = self.box_def_color
+		    else:
+			x, y, w, h, cl_name, prob, bbox_color = box
+		    draw_bBox(img, (x, y), (x+w, y+h), cl_name, prob*100, bbox_color=bbox_color)
             cv2.imwrite("tmp.png", img)
             self.img_lbl.setPixmap(QtGui.QPixmap("tmp.png"))
             remove("tmp.png")
